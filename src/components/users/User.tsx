@@ -1,18 +1,28 @@
 import React, { useEffect, Fragment, useContext } from "react";
 import Spinner from "../layout/Spinner";
 import Repos from "../repos/Repos";
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import GithubContext from "../../context/github/githubContext";
 
-const User = ({ match }) => {
+interface UserParams {
+  login: string;
+}
+
+interface UserProps extends RouteComponentProps<UserParams> {}
+
+const User: React.FC<UserProps> = ({ match }) => {
   const githubContext = useContext(GithubContext);
 
   const { getUser, loading, user, repos, getUserRepos } = githubContext;
 
   useEffect(() => {
-    getUser(match.params.login);
-    getUserRepos(match.params.login);
-  }, []);
+    if (getUser) {
+      getUser(match.params.login);
+    }
+    if (getUserRepos) {
+      getUserRepos(match.params.login);
+    }
+  }, [getUser, getUserRepos, match.params.login]);
 
   const {
     name,
@@ -28,7 +38,7 @@ const User = ({ match }) => {
     public_gists,
     hireable,
     company,
-  } = user;
+  } = user || {};
 
   if (loading) return <Spinner />;
 
@@ -63,7 +73,12 @@ const User = ({ match }) => {
               </Fragment>
             )}
 
-            <a href={html_url} target="_blank" className="btn btn-primary my-1">
+            <a
+              href={html_url}
+              target="_blank"
+              className="btn btn-primary my-1"
+              rel="noreferrer"
+            >
               Visit Github Profile
             </a>
             <br />
@@ -83,7 +98,7 @@ const User = ({ match }) => {
 
             {blog && (
               <Fragment>
-                Website : {blog} <br />
+                Website: {blog} <br />
               </Fragment>
             )}
           </div>

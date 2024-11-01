@@ -1,4 +1,4 @@
-import React, { useReducer } from "react";
+import React, { useReducer, ReactNode } from "react";
 import axios from "axios";
 import GithubContext from "./githubContext";
 import GithubReducer from "./githubReducer";
@@ -10,10 +10,36 @@ import {
   GET_REPOS,
 } from "../types";
 
-let githubClientId;
-let githubClientSecret;
+interface GithubStateProps {
+  children: ReactNode;
+}
 
-if (process.env.NODE_ENV != "production") {
+interface User {
+  id: number;
+  login: string;
+  avatar_url: string;
+  html_url: string;
+  // Add other properties as needed
+}
+
+interface Repo {
+  id: number;
+  name: string;
+  html_url: string;
+  // Add other properties as needed
+}
+
+interface GithubStateType {
+  users: User[];
+  user: User | null; // Change to User | null
+  repos: Repo[];
+  loading: boolean;
+}
+
+let githubClientId: string | undefined;
+let githubClientSecret: string | undefined;
+
+if (process.env.NODE_ENV !== "production") {
   githubClientId = process.env.REACT_APP_GITHUB_CLIENT_ID;
   githubClientSecret = process.env.REACT_APP_GITHUB_CLIENT_SECRET;
 } else {
@@ -21,10 +47,10 @@ if (process.env.NODE_ENV != "production") {
   githubClientSecret = process.env.GITHUB_CLIENT_SECRET;
 }
 
-const GithubState = (props) => {
-  const initialState = {
+const GithubState: React.FC<GithubStateProps> = ({ children }) => {
+  const initialState: GithubStateType = {
     users: [],
-    user: {},
+    user: null, // Initialize as null
     repos: [],
     loading: false,
   };
@@ -32,7 +58,7 @@ const GithubState = (props) => {
   const [state, dispatch] = useReducer(GithubReducer, initialState);
 
   // Search Users
-  const searchUsers = async (text) => {
+  const searchUsers = async (text: string) => {
     setLoading();
 
     const res = await axios.get(
@@ -41,12 +67,12 @@ const GithubState = (props) => {
 
     dispatch({
       type: SEARCH_USERS,
-      payload: res.data.items
+      payload: res.data.items,
     });
   };
 
   // Get User
-  const getUser = async (username) => {
+  const getUser = async (username: string) => {
     setLoading();
 
     const res = await axios.get(
@@ -55,12 +81,12 @@ const GithubState = (props) => {
 
     dispatch({
       type: GET_USER,
-      payload: res.data
+      payload: res.data,
     });
   };
 
   // Get User Repos
-  const getUserRepos = async (username) => {
+  const getUserRepos = async (username: string) => {
     setLoading();
 
     const res = await axios.get(
@@ -69,7 +95,7 @@ const GithubState = (props) => {
 
     dispatch({
       type: GET_REPOS,
-      payload: res.data
+      payload: res.data,
     });
   };
 
@@ -89,10 +115,10 @@ const GithubState = (props) => {
         searchUsers,
         clearUsers,
         getUser,
-        getUserRepos
+        getUserRepos,
       }}
     >
-      {props.children}
+      {children}
     </GithubContext.Provider>
   );
 };

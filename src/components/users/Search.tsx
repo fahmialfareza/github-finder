@@ -1,23 +1,28 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, ChangeEvent, FormEvent } from "react";
 import GithubContext from "../../context/github/githubContext";
 import AlertContext from "../../context/alert/alertContext";
 
-const Search = () => {
+const Search: React.FC = () => {
   const githubContext = useContext(GithubContext);
   const alertContext = useContext(AlertContext);
 
-  const [text, setText] = useState("");
+  const [text, setText] = useState<string>("");
 
-  const onChange = (event) => setText(event.target.value);
+  const onChange = (event: ChangeEvent<HTMLInputElement>) =>
+    setText(event.target.value);
 
-  const onSubmit = (event) => {
+  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (text == "") {
-      alertContext.setAlert("Please enter something", "danger");
+    if (text === "") {
+      if (alertContext && alertContext?.setAlert) {
+        alertContext?.setAlert("Please enter something", "danger");
+      }
     } else {
-      githubContext.searchUsers(text);
-      setText("");
+      if (githubContext && githubContext?.searchUsers) {
+        githubContext?.searchUsers(text);
+        setText("");
+      }
     }
   };
 
@@ -42,7 +47,7 @@ const Search = () => {
           />
         </div>
       </form>
-      {githubContext.users.length > 0 && (
+      {githubContext?.users.length > 0 && (
         <div className="form-group">
           <button
             className="btn btn-danger btn-block"

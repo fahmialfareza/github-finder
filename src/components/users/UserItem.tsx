@@ -1,8 +1,16 @@
 import React from "react";
-import PropTypes from 'prop-types';
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 
-const UserItem = ({ user: { login, avatar_url, html_url } }) => {
+interface User {
+  login: string;
+  avatar_url: string;
+}
+
+interface UserItemProps {
+  user: User;
+}
+
+const UserItem: React.FC<UserItemProps> = ({ user: { login, avatar_url } }) => {
   return (
     <div className="card text-center p-4 my-4">
       <img
@@ -21,9 +29,5 @@ const UserItem = ({ user: { login, avatar_url, html_url } }) => {
     </div>
   );
 };
-
-UserItem.propTypes = {
-  user: PropTypes.object.isRequired
-}
 
 export default UserItem;

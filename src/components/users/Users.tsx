@@ -1,10 +1,16 @@
-import React, { Fragment, useContext } from "react";
+import React, { useContext } from "react";
 import UserItem from "./UserItem";
 import Spinner from "../layout/Spinner";
-import PropTypes from "prop-types";
 import GithubContext from "../../context/github/githubContext";
 
-const Users = () => {
+interface User {
+  id: number;
+  login: string;
+  avatar_url: string;
+  html_url: string;
+}
+
+const Users: React.FC = () => {
   const githubContext = useContext(GithubContext);
 
   const { loading, users } = githubContext;
@@ -13,13 +19,13 @@ const Users = () => {
     return <Spinner />;
   } else {
     return (
-      <Fragment>
-        {users.map((user) => (
+      <>
+        {users.map((user: User) => (
           <div key={user.id} className="col-md-4">
             <UserItem user={user} />
           </div>
         ))}
-      </Fragment>
+      </>
     );
   }
 };
