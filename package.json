@@ -48,5 +48,9 @@
     "@types/react-dom": "^17.0.25",
     "@types/react-router-dom": "^5.3.3",
     "typescript": "^3.9.10"
+  },
+  "volta": {
+    "node": "18.16.0",
+    "pnpm": "8.6.0"
   }
 }
